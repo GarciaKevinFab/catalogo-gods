@@ -39,7 +39,7 @@ header{position:sticky;top:0;z-index:40;background:var(--header-bg);backdrop-fil
 .promos{display:flex;gap:10px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:none}
 .promos::-webkit-scrollbar{display:none}
 .promo{flex:none;background:linear-gradient(135deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:12px 16px;min-width:200px}
-@media(max-width:480px){.promo{min-width:150px;padding:10px 14px}.promo b{font-size:18px}.promo span{font-size:12px}.filters{padding:8px 0}.gender{margin-bottom:8px}.gender button{padding:8px 11px;font-size:13px;max-width:none}.section{padding:18px 0 4px}.row .card{width:min(200px,58vw)}.grid{gap:10px}.card .info{padding:9px 10px 11px}.card .name{font-size:13px;min-height:33px}}
+@media(max-width:480px){.promo{min-width:150px;padding:10px 14px}.promo b{font-size:18px}.promo span{font-size:12px}.filters{padding:8px 0}.gender{margin-bottom:8px;gap:6px}.gender button{padding:8px 6px;font-size:13px;max-width:none}.section{padding:18px 0 4px}.row .card{width:min(200px,58vw)}.grid{gap:10px}.card .info{padding:9px 10px 11px}.card .name{font-size:13px;min-height:33px}}
 .promo b{display:block;font-size:20px;color:var(--accent)}
 .promo span{font-size:13px;color:var(--muted)}
 .filters{position:sticky;top:var(--headerH,61px);z-index:30;background:var(--header-bg);backdrop-filter:blur(10px);padding:10px 0;border-bottom:1px solid var(--line)}
@@ -160,11 +160,11 @@ const WHATSAPP = "51964312870";
 
 /* ===== PRECIOS DE ESTA COPIA =====
    Los precios llegan de la nube (los del catálogo original). Aquí se les
-   suma AUMENTO soles a cada par: S/99.00 -> S/140.00, S/119.90 -> S/160.90, etc.
-   En las promos tambien se suman AUMENTO soles (2 pares S/179.90 -> S/220.90, 3 pares S/249.90 -> S/290.90).
+   suma AUMENTO soles a cada par: S/99.00 -> S/180.00, S/119.90 -> S/200.90, etc.
+   En las promos tambien se suman AUMENTO soles (2 pares S/179.90 -> S/260.90, 3 pares S/249.90 -> S/330.90).
    Para un precio puntual distinto, agrégalo en PRECIOS_FIJOS (tiene prioridad). */
-const AUMENTO = 41;
-const PRECIOS_FIJOS = { "S/99.00": "S/140.00" };
+const AUMENTO = 81;
+const PRECIOS_FIJOS = { "S/99.00": "S/180.00" };
 function subirPrecio(precio, pares){
   const s = String(precio == null ? "" : precio).trim();
   if(PRECIOS_FIJOS[s]) return PRECIOS_FIJOS[s];

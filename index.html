@@ -150,7 +150,7 @@ const WHATSAPP = "51964312870";
 /* ===== PRECIOS DE ESTA COPIA =====
    Los precios llegan de la nube (los del catálogo original). Aquí se les
    suma AUMENTO soles a cada par: S/99.00 -> S/140.00, S/119.90 -> S/160.90, etc.
-   En las promos se suma por cada par (2 pares -> +82, 3 pares -> +123).
+   En las promos tambien se suman AUMENTO soles (2 pares S/179.90 -> S/220.90, 3 pares S/249.90 -> S/290.90).
    Para un precio puntual distinto, agrégalo en PRECIOS_FIJOS (tiene prioridad). */
 const AUMENTO = 41;
 const PRECIOS_FIJOS = { "S/99.00": "S/140.00" };
@@ -237,10 +237,7 @@ if(db){
     const sig = JSON.stringify([d.config, d.products]);
     if(sig === lastSig) return;
     lastSig = sig;
-    const promos = (d.config.promos || []).map((pr, i) => {
-      const mp = String(pr.detalle || "").match(/(\d+)/);
-      return { ...pr, precio: subirPrecio(pr.precio, mp ? +mp[1] : i + 2) };
-    });
+    const promos = (d.config.promos || []).map(pr => ({ ...pr, precio: subirPrecio(pr.precio, 1) }));
     const products = d.products.map(p => ({ ...p, price: subirPrecio(p.price, 1) }));
     mount({ ...d.config, whatsapp: WHATSAPP, promos }, products);
   }, err=>{ fail("No se pudo cargar el catálogo."); });

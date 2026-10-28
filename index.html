@@ -147,6 +147,22 @@ const STORE  = (params.get("store")||"GODS").toUpperCase();
 /* Número de WhatsApp de ESTA copia del catálogo (reemplaza al que viene de la nube) */
 const WHATSAPP = "51964312870";
 
+/* ===== PRECIOS DE ESTA COPIA =====
+   Los precios llegan de la nube (los del catálogo original). Aquí se les
+   suma AUMENTO soles a cada par: S/99.00 -> S/140.00, S/119.90 -> S/160.90, etc.
+   En las promos se suma por cada par (2 pares -> +82, 3 pares -> +123).
+   Para un precio puntual distinto, agrégalo en PRECIOS_FIJOS (tiene prioridad). */
+const AUMENTO = 41;
+const PRECIOS_FIJOS = { "S/99.00": "S/140.00" };
+function subirPrecio(precio, pares){
+  const s = String(precio == null ? "" : precio).trim();
+  if(PRECIOS_FIJOS[s]) return PRECIOS_FIJOS[s];
+  const m = s.match(/(\d+(?:[.,]\d+)?)/);
+  if(!m) return s;
+  const n = parseFloat(m[1].replace(",", ".")) + AUMENTO * (pares || 1);
+  return s.replace(m[1], n.toFixed(2));
+}
+
 /* Cuántos modelos se pintan por tanda. Bájalo a 24 si tu público es muy 3G. */
 const PAGE_SIZE = 40;
 
@@ -221,7 +237,12 @@ if(db){
     const sig = JSON.stringify([d.config, d.products]);
     if(sig === lastSig) return;
     lastSig = sig;
-    mount({ ...d.config, whatsapp: WHATSAPP }, d.products);
+    const promos = (d.config.promos || []).map((pr, i) => {
+      const mp = String(pr.detalle || "").match(/(\d+)/);
+      return { ...pr, precio: subirPrecio(pr.precio, mp ? +mp[1] : i + 2) };
+    });
+    const products = d.products.map(p => ({ ...p, price: subirPrecio(p.price, 1) }));
+    mount({ ...d.config, whatsapp: WHATSAPP, promos }, products);
   }, err=>{ fail("No se pudo cargar el catálogo."); });
 }
 

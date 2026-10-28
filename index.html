@@ -197,6 +197,15 @@ document.addEventListener("click", e=>{
    suma AUMENTO soles a cada par: S/99.00 -> S/180.00, S/119.90 -> S/200.90, etc.
    En las promos tambien se suman AUMENTO soles (2 pares S/179.90 -> S/260.90, 3 pares S/249.90 -> S/330.90).
    Para un precio puntual distinto, agrégalo en PRECIOS_FIJOS (tiene prioridad). */
+/* Productos de la nube que NO se muestran en esta copia (por id o por texto del nombre) */
+const OCULTAR_IDS = [1784417715491];
+const OCULTAR_NOMBRES = ["RELOJ"];
+function visible(p){
+  if(OCULTAR_IDS.some(id => String(id) === String(p.id))) return false;
+  const n = String(p.name || "").toUpperCase();
+  return !OCULTAR_NOMBRES.some(t => n.includes(t.toUpperCase()));
+}
+
 const AUMENTO = 81;
 const PRECIOS_FIJOS = { "S/99.00": "S/180.00" };
 function subirPrecio(precio, pares){
@@ -277,13 +286,13 @@ if(db){
   onSnapshot(doc(db,"stores",STORE), snap=>{
     if(!snap.exists()){ fail("Este catálogo aún no tiene productos."); return; }
     const d = snap.data();
-    if(!d.config || !d.products || !d.products.length){ fail("Este catálogo aún no tiene productos."); return; }
+    if(!d.config || !d.products || !d.products.filter(visible).length){ fail("Este catálogo aún no tiene productos."); return; }
     /* Evita repintar todo cuando Firestore reenvía el mismo documento */
     const sig = JSON.stringify([d.config, d.products]);
     if(sig === lastSig) return;
     lastSig = sig;
     const promos = (d.config.promos || []).map(pr => ({ ...pr, precio: subirPrecio(pr.precio, 1) }));
-    const products = d.products.map(p => ({ ...p, price: subirPrecio(p.price, 1) }));
+    const products = d.products.filter(visible).map(p => ({ ...p, price: subirPrecio(p.price, 1) }));
     mount({ ...d.config, whatsapp: WHATSAPP, promos }, products);
   }, err=>{ fail("No se pudo cargar el catálogo."); });
 }

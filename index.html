@@ -83,6 +83,8 @@ header{position:sticky;top:0;z-index:40;background:var(--header-bg);backdrop-fil
 .card .price.nopromo{color:var(--accent)}
 .loadmore{display:block;margin:6px auto 40px;padding:13px 26px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:999px;font-weight:700;font-size:15px;cursor:pointer}
 .loadmore[hidden]{display:none}
+.chip[hidden]{display:none}
+.empty .reset{margin-top:16px;padding:10px 22px;background:var(--text);color:var(--bg);border:0;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
 #sentinel{height:4px}
 .trust{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:10px}
 .trust .grid3{display:grid;grid-template-columns:1fr;gap:14px;padding:26px 0}
@@ -348,7 +350,7 @@ function mount(CONFIG, PRODUCTS){
     <div class="grid" id="grid"></div>
     <div id="sentinel"></div>
     <button class="loadmore" id="more" hidden>Ver más modelos</button>
-    <div class="empty" id="empty" hidden>No encontramos modelos con ese filtro 🤔<br>Prueba otra marca o búsqueda.</div>
+    <div class="empty" id="empty" hidden>No encontramos modelos con ese filtro 🤔<br>Prueba otra marca o búsqueda.<br><button class="reset" id="resetFilters" type="button">Quitar filtros</button></div>
   </div>
   <div class="trust"><div class="wrap"><div class="grid3">
     <div class="item"><div class="ic">🚚</div><div><h3>Envíos a todo el Perú</h3><p>${esc(CONFIG.trust.envios)}</p></div></div>
@@ -370,6 +372,12 @@ function mount(CONFIG, PRODUCTS){
   const $count = document.getElementById("listCount");
   const $title = document.getElementById("listTitle");
   const $q     = document.getElementById("q");
+  document.getElementById("resetFilters").onclick = ()=>{
+    gender = "Todos"; brand = "Todas"; query = ""; $q.value = "";
+    document.querySelectorAll("[data-g]").forEach(x=>x.classList.toggle("on", x.dataset.g===gender));
+    document.querySelectorAll("[data-b]").forEach(x=>x.classList.toggle("on", x.dataset.b===brand));
+    applyFilters();
+  };
 
   /* La barra de filtros se pega justo debajo del header, sea cual sea su alto.
      Antes estaba fijo en 61px y se escondía detrás del header al hacer scroll. */
@@ -386,10 +394,27 @@ function mount(CONFIG, PRODUCTS){
     (news.length ? `<div class="section"><h2><span class="dot"></span>Novedades</h2><div class="sub">Lo último que llegó</div><div class="row">${news.map(cardHTML).join("")}</div></div>` : "") +
     (best.length ? `<div class="section"><h2><span class="dot"></span>Más vendidos</h2><div class="sub">Los favoritos de nuestros clientes</div><div class="row">${best.map(cardHTML).join("")}</div></div>` : "");
 
+  function okGender(p){ return gender==="Todos" ? true : (gender==="Premium" ? isPremium(p) : p.gender===gender); }
+
+  /* Oculta las marcas que no tienen modelos para el género elegido
+     (p. ej. Mujer + Lacoste) para que el cliente no llegue a una lista vacía. */
+  function syncBrands(){
+    const chips = document.querySelectorAll("[data-b]");
+    let brandOk = brand==="Todas";
+    chips.forEach(ch=>{
+      const b = ch.dataset.b; if(b==="Todas") return;
+      const has = PRODUCTS.some(p=>p.brand===b && okGender(p));
+      ch.hidden = !has;
+      if(b===brand && has) brandOk = true;
+    });
+    if(!brandOk){ brand = "Todas"; chips.forEach(x=>x.classList.toggle("on", x.dataset.b===brand)); }
+  }
+
   function applyFilters(){
+    syncBrands();
     const qq = query.trim().toLowerCase();
     viewList = PRODUCTS.filter(p=>{
-      const g = gender==="Todos" ? true : (gender==="Premium" ? isPremium(p) : p.gender===gender);
+      const g = okGender(p);
       const b = brand==="Todas" || p.brand===brand;
       const q = !qq || (p.brand+" "+p.name).toLowerCase().includes(qq);
       return g && b && q;

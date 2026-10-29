@@ -18,6 +18,7 @@ Misma web y mismo catálogo; solo cambia el WhatsApp al que llegan los pedidos.
 | Ronaldo | https://garciakevinfab.github.io/catalogo-gods/ronaldo/ | +51 991 951 234 |
 | Alexander | https://garciakevinfab.github.io/catalogo-gods/alexander/ | +51 964 312 870 |
 | Richard | https://garciakevinfab.github.io/catalogo-gods/richard/ | +51 966 955 747 |
+| Aron | https://garciakevinfab.github.io/catalogo-gods/aron/ | +51 942 035 360 |
 
 Para agregar o cambiar un vendedor: edita la lista `PAGINAS` en `vendedores.py`, ejecuta `python vendedores.py` y sube los cambios. El script genera el `index.html` y la imagen de vista previa (`og.png`) de cada carpeta.
 

@@ -16,6 +16,7 @@ PAGINAS = [
     dict(carpeta="ronaldo",   nombre="Ronaldo",   whatsapps=["51991951234"]),
     dict(carpeta="alexander", nombre="Alexander", whatsapps=["51964312870"]),
     dict(carpeta="richard",   nombre="Richard",   whatsapps=["51966955747"]),
+    dict(carpeta="aron",      nombre="Aron",      whatsapps=["51942035360"]),
 ]
 
 def tel(n): return "+%s %s %s %s" % (n[:2], n[2:5], n[5:8], n[8:])
